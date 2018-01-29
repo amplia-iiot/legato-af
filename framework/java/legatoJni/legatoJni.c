@@ -495,6 +495,48 @@ JNIEXPORT void JNICALL Java_io_legato_LegatoJni_RunLoop
 
 //--------------------------------------------------------------------------------------------------
 /**
+ *  Init the Legato thread-specific data needed by the framework for the calling thread.
+ */
+//--------------------------------------------------------------------------------------------------
+JNIEXPORT void JNICALL Java_io_legato_LegatoJni_InitLegatoThreadData
+(
+    JNIEnv* envPtr,      ///< [IN] The Java environment to work out of.
+    jclass callClassPtr, ///< [IN] The java class that called this function.
+    jstring threadName   ///< [IN] Name of the thread to init.
+)
+//--------------------------------------------------------------------------------------------------
+{
+    const char* threadNamePtr = (*envPtr)->GetStringUTFChars(envPtr, threadName, NULL);
+
+    le_thread_InitLegatoThreadData(threadNamePtr);
+
+    (*envPtr)->ReleaseStringUTFChars(envPtr, threadName, threadNamePtr);
+}
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+/**
+ *  Clean-up the Legato thread-specific data that was initialized using
+ *  Java_io_legato_LegatoJni_InitLegatoThreadData
+ */
+//--------------------------------------------------------------------------------------------------
+JNIEXPORT void JNICALL Java_io_legato_LegatoJni_CleanupLegatoThreadData
+(
+    JNIEnv* envPtr,      ///< [IN] The Java environment to work out of.
+    jclass callClassPtr  ///< [IN] The java class that called this function.
+)
+//--------------------------------------------------------------------------------------------------
+{
+    le_thread_CleanupLegatoThreadData();
+}
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+/**
  *  @return The size of a native pointer, either 4 or 8.
  */
 //--------------------------------------------------------------------------------------------------

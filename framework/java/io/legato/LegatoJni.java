@@ -38,6 +38,10 @@ class LegatoJni
     public static native void RunLoop();
     public static native void QueueFunctionInMainThread(Runnable job);
 
+    // Thread functions.
+    public static native void InitLegatoThreadData(String threadName);
+    public static native void CleanupLegatoThreadData();
+
     // Useful helpers.
     public static native int NativePointerSize();
 

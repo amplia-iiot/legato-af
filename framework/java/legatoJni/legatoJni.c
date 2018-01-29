@@ -1345,7 +1345,7 @@ JNIEXPORT jlong JNICALL Java_io_legato_LegatoJni_GetSession
  * @return A Java FileDescritpor object.
  */
 //--------------------------------------------------------------------------------------------------
-JNIEXPORT jobject JNICALL Java_io_legato_LegatoJni_GetFd
+JNIEXPORT jobject JNICALL Java_io_legato_LegatoJni_GetMessageFd
 (
     JNIEnv* envPtr,       ///< [IN] The Java environment to work out of.
     jclass callClassPtr,  ///< [IN] The java class that called this function.
@@ -1371,7 +1371,7 @@ JNIEXPORT jobject JNICALL Java_io_legato_LegatoJni_GetFd
  * At most one file descriptor is allowed to be sent per message.
  */
 //--------------------------------------------------------------------------------------------------
-JNIEXPORT void JNICALL Java_io_legato_LegatoJni_SetFd
+JNIEXPORT void JNICALL Java_io_legato_LegatoJni_SetMessageFd
 (
     JNIEnv* envPtr,         ///< [IN] The Java environment to work out of.
     jclass callClassPtr,    ///< [IN] The java class that called this function.

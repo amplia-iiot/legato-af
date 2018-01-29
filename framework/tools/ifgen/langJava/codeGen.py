@@ -376,6 +376,22 @@ def WriteInterfaceHeader(interfaceFile, name):
 
 
 # --------------------------------------------------------------------------------------------------
+# Generate the interface functions to control session
+# --------------------------------------------------------------------------------------------------
+def WriteInterfaceSessionItems(interfaceFile):
+    openFunction = codeTypes.FunctionData("open", "", [], "")
+    serviceNameParam = codeTypes.StringParmData("serviceName")
+    openServiceNameFunction = codeTypes.FunctionData("open", "", [serviceNameParam], "")
+    closeFunction = codeTypes.FunctionData("close", "", [], "")
+
+    WriteInterfaceFunction(interfaceFile, openFunction)
+    WriteInterfaceFunction(interfaceFile, openServiceNameFunction)
+    WriteInterfaceFunction(interfaceFile, closeFunction)
+
+
+
+
+# --------------------------------------------------------------------------------------------------
 # Generate a reference type.
 # --------------------------------------------------------------------------------------------------
 def WriteInterfaceRef(interfaceFile, codeItem):
@@ -1412,6 +1428,9 @@ def WriteAllCode(commandArgs, importedCode, importedApis, parsedData, hashValue)
 
     # Generate file headers.
     WriteInterfaceHeader(interfaceFile, commandArgs.serviceName)
+
+    # Generate functions to control session
+    WriteInterfaceSessionItems(interfaceFile)
 
     if commandArgs.genServer:
         WriteServerHeader(serverFile, importedApis, bufferSize, commandArgs.serviceName, hashValue)

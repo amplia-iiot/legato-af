@@ -238,7 +238,7 @@ class ArrayParmData(BaseParmData):
 
 class StringParmData(BaseParmData):
 
-    def __init__(self, name, direction, maxSize=None, minSize=None):
+    def __init__(self, name, direction=None, maxSize=None, minSize=None):
         super(StringParmData, self).__init__(name, 'string', direction, maxSize, minSize)
 
 

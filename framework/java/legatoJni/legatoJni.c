@@ -21,6 +21,8 @@
 static JavaVM* JvmPtr;
 
 
+/// Global pointer to the main thread, that is, the one that executed COMPONENT_INIT
+static le_thread_Ref_t mainThreadRef = NULL;
 
 
 void _HexDump
@@ -437,6 +439,8 @@ JNIEXPORT void JNICALL Java_io_legato_LegatoJni_Init
     // callbacks will need a way to access the Java environment in a safe manor.
     jint rs = (*envPtr)->GetJavaVM(envPtr, &JvmPtr);
     LE_ASSERT(rs == JNI_OK);
+
+    mainThreadRef = le_thread_GetCurrent();
 
     // TODO: Cache required Java method IDs so that the various functions that need to call Java
     //       methods can be faster.
@@ -1832,4 +1836,55 @@ JNIEXPORT void JNICALL Java_io_legato_LegatoJni_SetMessageLongRef
     uint8_t* msgBufferPtr = (uint8_t*)le_msg_GetPayloadPtr(nRef);
 
     *((intptr_t*)&msgBufferPtr[bufferPosition]) = value;
+}
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+/**
+ *  Helper function for QueueFunctionInMainThread. Executes Java code (Runnable.run())
+ */
+//--------------------------------------------------------------------------------------------------
+static void InternalRunInMain(void* p1, void* p2)
+{
+    jobject ptrRunnable = p1;
+
+    JNIEnv* envPtr;
+    jint rs = (*JvmPtr)->AttachCurrentThread(JvmPtr, (void**)&envPtr, NULL);
+    LE_ASSERT(rs == JNI_OK);
+
+    jclass RunnableInterface = (*envPtr)->GetObjectClass(envPtr, ptrRunnable); //get our java runnable interface instance.
+    jmethodID Run = (*envPtr)->GetMethodID(envPtr, RunnableInterface, "run","()V"); //get the run method function pointer.
+
+    if (Run == NULL)
+    {
+        (*envPtr)->ExceptionDescribe(envPtr);
+        (*envPtr)->ExceptionClear(envPtr);
+        (*envPtr)->DeleteGlobalRef(envPtr, ptrRunnable);
+        return;
+    }
+
+    (*envPtr)->CallObjectMethod(envPtr, ptrRunnable, Run);
+    (*envPtr)->DeleteGlobalRef(envPtr, ptrRunnable); //The Java Garbage Collector can now free this object
+}
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+/**
+ *  Queue java code so that it will be executed in main thread
+ */
+//--------------------------------------------------------------------------------------------------
+JNIEXPORT void JNICALL Java_io_legato_LegatoJni_QueueFunctionInMainThread
+(
+    JNIEnv* envPtr,       ///< [IN] The Java environment to work out of.
+    jclass callClassPtr,  ///< [IN] The java class that called this function.
+    jobject runnable      ///< [IN] The java Runnable instance to run in main thread
+)
+//--------------------------------------------------------------------------------------------------
+{
+    jobject ptrRunnable = (*envPtr)->NewGlobalRef(envPtr, runnable); //Prevents Java Garbage Collector to free this object
+    le_event_QueueFunctionToThread(mainThreadRef, InternalRunInMain, ptrRunnable, NULL);
 }

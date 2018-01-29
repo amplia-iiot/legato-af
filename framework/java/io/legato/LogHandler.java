@@ -85,7 +85,7 @@ public class LogHandler extends Handler
     @Override
     public void publish(LogRecord record)
     {
-        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        StackTraceElement[] stack = java.lang.Thread.currentThread().getStackTrace();
         Formatter formatter = getFormatter();
 
         int recordLevel = record.getLevel().intValue();

@@ -60,6 +60,50 @@ void _HexDump
 
 //--------------------------------------------------------------------------------------------------
 /**
+ *  Construct a Java object to hold a Legato operation result.
+ *
+ *  @return: A new instance of a Result object.
+ */
+//--------------------------------------------------------------------------------------------------
+static jobject NewResult
+(
+    JNIEnv* envPtr,        ///< [IN] The Java environment to work out of.
+    le_result_t result     ///< [IN] The Legato operation result.
+)
+//--------------------------------------------------------------------------------------------------
+{
+    jclass classPtr = (*envPtr)->FindClass(envPtr, "io/legato/Result");
+
+    if (classPtr == NULL)
+    {
+        (*envPtr)->ExceptionDescribe(envPtr);
+        (*envPtr)->ExceptionClear(envPtr);
+        return NULL;
+    }
+
+    jmethodID fromIntMethod = (*envPtr)->GetStaticMethodID(envPtr,
+                                                           classPtr,
+                                                           "fromInt",
+                                                            "(I)Lio/legato/Result;");
+
+    if (fromIntMethod == NULL)
+    {
+        (*envPtr)->ExceptionDescribe(envPtr);
+        (*envPtr)->ExceptionClear(envPtr);
+        return NULL;
+    }
+
+    return (*envPtr)->CallStaticObjectMethod(envPtr,
+                                             classPtr,
+                                             fromIntMethod,
+                                             (jint)(intptr_t)result);
+}
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+/**
  *  Construct a Java object to hold onto the active connection to the logging system.
  *
  *  @return: A new instance of a log handle object.
@@ -488,6 +532,28 @@ JNIEXPORT void JNICALL Java_io_legato_LegatoJni_RunLoop
 //--------------------------------------------------------------------------------------------------
 {
     le_event_RunLoop();
+}
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+/**
+ *  Services the Legato event loop.
+ */
+//--------------------------------------------------------------------------------------------------
+JNIEXPORT jobject JNICALL Java_io_legato_LegatoJni_ServiceLoop
+(
+    JNIEnv* envPtr,      ///< [IN] The Java environment to work out of.
+    jclass callClassPtr  ///< [IN] The java class that called this function.
+)
+//--------------------------------------------------------------------------------------------------
+{
+    le_result_t result;
+
+    result = le_event_ServiceLoop();
+
+    return NewResult(envPtr, result);
 }
 
 

@@ -36,6 +36,7 @@ class LegatoJni
     // Core runtime functions.
     public static native void ScheduleComponentInit(Component component);
     public static native void RunLoop();
+    public static native void QueueFunctionInMainThread(Runnable job);
 
     // Useful helpers.
     public static native int NativePointerSize();

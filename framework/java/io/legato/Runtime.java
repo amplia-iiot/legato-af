@@ -51,4 +51,17 @@ public class Runtime
     {
         LegatoJni.RunLoop();
     }
+
+    //----------------------------------------------------------------------------------------------
+    /**
+     *  Executes a Runnable in the main Legato thread. This function returns immediately as it 
+     *  only queues the request.
+     *
+     *  @param job  The Runnable to run.
+     */
+    //----------------------------------------------------------------------------------------------
+    public static void QueueFunctionInMainThread(Runnable job)
+    {
+        LegatoJni.QueueFunctionInMainThread(job);
+    }
 }

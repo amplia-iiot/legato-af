@@ -35,6 +35,8 @@ struct Component_t
 
     std::set<std::string> staticLibs;   ///< Static library files to be linked with the exe.
 
+    std::set<std::string> javaLibs;     ///< Java lib files to be included in the classPath.
+
     std::list<std::string> ldFlags;     ///< List of linker options.
     std::list<std::string> cFlags;      ///< List of options to pass to the C compiler.
     std::list<std::string> cxxFlags;    ///< List of options to pass to the C++ compiler.

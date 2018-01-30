@@ -89,6 +89,13 @@ static void GetCommandLineArgs
             BuildParams.sourceDirs.push_back(path);
         };
 
+    // Lambda function that gets called once for each occurence of the lib search path
+    // argument on the command line.
+    auto libPathPush = [&](const char* path)
+        {
+            BuildParams.libDirs.push_back(path);
+        };
+
     // Lambda function that gets called once for each content item on the command line.
     auto contentPush = [&](const char* param)
         {
@@ -135,6 +142,11 @@ static void GetCommandLineArgs
                             "source-search",
                             "Add a directory to the source search path.",
                             sourceDirPush);
+
+    args::AddMultipleString('z',
+                            "lib-search",
+                            "Add a directory to the lib search path.",
+                            libPathPush);
 
     args::AddOptionalFlag(&BuildParams.beVerbose,
                           'v',
@@ -187,6 +199,7 @@ static void GetCommandLineArgs
     // list of interface search directories.
     BuildParams.sourceDirs.push_back(".");
     BuildParams.interfaceDirs.push_back(".");
+    BuildParams.libDirs.push_back(".");
 
     // Make the ExePath absolute, if it isn't already.
     ExePath = path::MakeAbsolute(ExePath);

@@ -336,6 +336,7 @@ void GenerateBuildStatements
             if (componentPtr->HasJavaCode())
             {
                 classPath.push_back(componentPtr->lib);
+                classPath.insert(classPath.end(), componentPtr->javaLibs.begin(), componentPtr->javaLibs.end());
                 dependencies.push_back(componentPtr->lib);
             }
         }

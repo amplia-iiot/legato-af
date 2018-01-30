@@ -430,7 +430,7 @@ static std::string GenerateClassPath
 
         if (componentPtr->HasJavaCode())
         {
-            classPath += ":lib/" + path::GetLastNode(componentPtr->lib);
+            classPath += ":lib/*";
         }
     }
 

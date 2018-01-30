@@ -563,10 +563,33 @@ static void AddRequiredLib
     // Skip if environment variable substitution resulted in an empty string.
     if (!lib.empty())
     {
+        // If the library specifier ends in a .jar extension,
+        // it is a java library, which has to be included in the classPath.
+        if (path::HasSuffix(lib, ".jar"))
+        {
+            // Try to find it relative to the component directory or the library output
+            // directory.
+            std::list<std::string> searchDirs = buildParams.libDirs;
+            searchDirs.push_back(componentPtr->dir);
+            searchDirs.push_back(buildParams.libOutputDir);
+            auto libPath = file::FindFile(lib, searchDirs);
+
+            // If found,
+            if (!libPath.empty())
+            {
+                // Add the library to the list of the component's implicit dependencies.
+                componentPtr->implicitDependencies.insert(libPath);
+
+                // Replace lib path
+                lib = libPath;
+            }
+
+            componentPtr->javaLibs.insert(lib);
+        }
         // If the library specifier ends in a .a extension,
         // it is a static library, which may not be compiled with position-independent code,
         // so this has to be linked with the executable at the last linking stage.
-        if (path::HasSuffix(lib, ".a"))
+        else if (path::HasSuffix(lib, ".a"))
         {
             componentPtr->staticLibs.insert(lib);
         }

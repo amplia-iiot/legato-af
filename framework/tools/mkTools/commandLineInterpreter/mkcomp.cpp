@@ -88,6 +88,10 @@ static void GetCommandLineArgs
     {
         BuildParams.sourceDirs.push_back(path);
     };
+    auto libPathPush = [&](const char* path)
+        {
+            BuildParams.libDirs.push_back(path);
+        };
 
     // Lambda function that gets called once for each occurence of a component path on the
     // command line.
@@ -145,6 +149,11 @@ static void GetCommandLineArgs
                              "source-search",
                              "Add a directory to the source search path.",
                              sourceDirPush);
+
+    args::AddMultipleString('z',
+                            "lib-search",
+                            "Add a directory to the lib search path.",
+                            libPathPush);
 
     args::AddOptionalFlag(&BuildParams.beVerbose,
                            'v',
@@ -210,6 +219,7 @@ static void GetCommandLineArgs
     // list of interface search directories.
     BuildParams.sourceDirs.push_back(".");
     BuildParams.interfaceDirs.push_back(".");
+    BuildParams.libDirs.push_back(".");
 
     // Add the Legato framework's "interfaces" directory to the list of interface search dirs.
     BuildParams.interfaceDirs.push_back(path::Combine(envVars::Get("LEGATO_ROOT"), "interfaces"));

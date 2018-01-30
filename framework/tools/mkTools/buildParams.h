@@ -24,6 +24,7 @@ struct BuildParams_t
     std::string             target;             ///< (e.g., "localhost" or "ar7")
     std::list<std::string>  interfaceDirs;      ///< Interface search directory paths.
     std::list<std::string>  sourceDirs;         ///< Source search directory paths.
+    std::list<std::string>  libDirs;            ///< Library search directory paths.
     std::string             libOutputDir;       ///< Dir path for built libraries ("" if not set).
     std::string             workingDir;         ///< Dir path for intermediate build products.
     std::string             cFlags;             ///< Flags to be passed to the C compiler.

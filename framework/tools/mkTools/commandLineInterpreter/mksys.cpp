@@ -95,6 +95,13 @@ static void GetCommandLineArgs
             BuildParams.sourceDirs.push_back(path);
         };
 
+    // Lambda function that gets called once for each occurence of the lib search path
+    // argument on the command line.
+    auto libPathPush = [&](const char* path)
+        {
+            BuildParams.libDirs.push_back(path);
+        };
+
     // Lambda function that gets called once for each occurence of a .sdef file name on the
     // command line.
     auto sdefFileNameSet = [&](const char* param)
@@ -129,6 +136,11 @@ static void GetCommandLineArgs
                             "source-search",
                             "Add a directory to the source search path.",
                             sourcePathPush);
+
+    args::AddMultipleString('z',
+                            "lib-search",
+                            "Add a directory to the lib search path.",
+                            libPathPush);
 
     args::AddOptionalString(&BuildParams.target,
                             "localhost",

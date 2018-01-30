@@ -883,6 +883,58 @@ static void GetInterfaceSearchDirs
 
 //--------------------------------------------------------------------------------------------------
 /**
+ * Get lib search directory paths from a "libSearch:" section and add them to the
+ * list in the buildParams object.
+ */
+//--------------------------------------------------------------------------------------------------
+static void GetLibSearchDirs
+(
+    mk::BuildParams_t& buildParams, ///< Object to add lib search dir paths to.
+    const parseTree::TokenList_t* sectionPtr
+)
+//--------------------------------------------------------------------------------------------------
+{
+    // A libSearch section is a list of FILE_PATH tokens.
+    for (const auto contentItemPtr : sectionPtr->Contents())
+    {
+        auto tokenPtr = dynamic_cast<const parseTree::Token_t*>(contentItemPtr);
+
+        auto dirPath = path::Unquote(envVars::DoSubstitution(tokenPtr->text));
+
+        // If the environment variable substitution resulted in an empty string, just ignore this.
+        if (!dirPath.empty())
+        {
+            buildParams.libDirs.push_back(dirPath);
+        }
+    }
+}
+
+
+//--------------------------------------------------------------------------------------------------
+/**
+ * Add all the lib search dir paths from all "libSearch:" sections to a given
+ * BuildParams_t object.
+ */
+//--------------------------------------------------------------------------------------------------
+static void GetLibSearchDirs
+(
+    mk::BuildParams_t& buildParams, ///< Object to add lib search dir paths to.
+    const std::list<const parseTree::CompoundItem_t*>& sectionPtrList
+)
+//--------------------------------------------------------------------------------------------------
+{
+    for (auto sectionPtr : sectionPtrList)
+    {
+        // Each libSearch section is a list of FILE_PATH tokens.
+        auto tokenListPtr = dynamic_cast<const parseTree::TokenList_t*>(sectionPtr);
+
+        GetLibSearchDirs(buildParams, tokenListPtr);
+    }
+}
+
+
+//--------------------------------------------------------------------------------------------------
+/**
  * Get a conceptual model for a system whose .sdef file can be found at a given path.
  *
  * @return Pointer to the system object.
@@ -917,6 +969,7 @@ model::System_t* GetSystem
     std::list<const parseTree::CompoundItem_t*> commandsSections;
     std::list<const parseTree::CompoundItem_t*> kernelModulesSections;
     std::list<const parseTree::CompoundItem_t*> interfaceSearchSections;
+    std::list<const parseTree::CompoundItem_t*> libSearchSections;
 
     // Iterate over the .sdef file's list of sections, processing content items.
     for (auto sectionPtr : sdefFilePtr->sections)
@@ -953,6 +1006,10 @@ model::System_t* GetSystem
         {
             interfaceSearchSections.push_back(sectionPtr);
         }
+        else if (sectionName == "libSearch")
+        {
+            libSearchSections.push_back(sectionPtr);
+        }
         else
         {
             sectionPtr->ThrowException("Internal error: Unrecognized section '" + sectionName
@@ -963,6 +1020,10 @@ model::System_t* GetSystem
     // Process all the "interfaceSearch:" sections.  This must be done after all the build
     // environment variable settings have been parsed.
     GetInterfaceSearchDirs(buildParams, interfaceSearchSections);
+
+    // Process all the "libSearch:" sections.  This must be done after all the build
+    // environment variable settings have been parsed.
+    GetLibSearchDirs(buildParams, libSearchSections);
 
     // Process all the "apps:" sections.  This must be done after all the build environment
     // variable settings have been parsed.

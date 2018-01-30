@@ -534,11 +534,14 @@ void GenerateBuildStatements
                                            "build/$target/framework/lib/legato.jar");
         auto classDestPath = "$builddir/" + componentPtr->workingDir + "/obj";
 
+        std::list<std::string> classPath(componentPtr->javaLibs.begin(), componentPtr->javaLibs.end());
+        classPath.push_back(legatoJarPath);
+
         GenerateJavaBuildCommand(script,
                                  componentPtr->lib,
                                  classDestPath,
                                  sourceList,
-                                 { legatoJarPath },
+                                 classPath,
                                  { legatoJarPath, classDestPath });
     }
 }

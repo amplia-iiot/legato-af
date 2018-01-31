@@ -660,9 +660,6 @@ def WriteInterfaceFooter(interfaceFile):
 # --------------------------------------------------------------------------------------------------
 def WriteServerHeader(interfaceFile, importedApis, bufferSize, serviceName, hashValue):
 
-    importList = [ ("import io.legato.api.%s;" % item) for item in importedApis ]
-    importedApiStr = "\n".join(importList) + "\n"
-
     print >>interfaceFile, \
           "\n" + \
           "// Generated server implementation of API " + serviceName + ".\n" + \
@@ -681,7 +678,6 @@ def WriteServerHeader(interfaceFile, importedApis, bufferSize, serviceName, hash
           "import io.legato.Protocol;\n" + \
           "import io.legato.ServerSession;\n" + \
           "import io.legato.SessionEvent;\n" + \
-          importedApiStr + \
           "import io.legato.api." + serviceName + ";\n" + \
           "\n" + \
           "public class " + serviceName + "Server implements AutoCloseable\n" + \
@@ -986,9 +982,6 @@ def WriteServerFooter(serverFile):
 # --------------------------------------------------------------------------------------------------
 def WriteClientHeader(clientFile, importedApis, bufferSize, serviceName, hashValue):
 
-    importList = [ ("import io.legato.api.%s;" % item) for item in importedApis ]
-    importedApiStr = "\n".join(importList) + "\n"
-
     print >>clientFile, "\n" + \
                         "// Generated client implementation of the API " + serviceName + ".\n" + \
                         "// This is a generated file, do not edit.\n" + \
@@ -1005,7 +998,6 @@ def WriteClientHeader(clientFile, importedApis, bufferSize, serviceName, hashVal
                         "import io.legato.Protocol;\n" + \
                         "import io.legato.MessageBuffer;\n" + \
                         "import io.legato.ClientSession;\n" + \
-                        importedApiStr + \
                         "import io.legato.api." + serviceName + ";\n" + \
                         "\n" + \
                         "public class " + serviceName + "Client implements AutoCloseable, " + serviceName + "\n" + \

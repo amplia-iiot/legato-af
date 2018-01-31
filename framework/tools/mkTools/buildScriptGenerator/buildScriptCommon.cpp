@@ -681,17 +681,26 @@ void GenerateIpcBuildStatements
 
     for (auto typesOnlyApi : componentPtr->typesOnlyApis)
     {
-        GenerateBuildStatement(script, typesOnlyApi, buildParams, generatedSet);
+        if (!isJava)
+        {
+            GenerateBuildStatement(script, typesOnlyApi, buildParams, generatedSet);
+        }
     }
 
     for (auto apiFilePtr : componentPtr->clientUsetypesApis)
     {
-        GenerateClientUsetypesHFileBuildStatement(script, apiFilePtr, buildParams, generatedSet);
+        if (!isJava)
+        {
+            GenerateClientUsetypesHFileBuildStatement(script, apiFilePtr, buildParams, generatedSet);
+        }
     }
 
     for (auto apiFilePtr : componentPtr->serverUsetypesApis)
     {
-        GenerateServerUsetypesHFileBuildStatement(script, apiFilePtr, buildParams, generatedSet);
+        if (!isJava)
+        {
+            GenerateServerUsetypesHFileBuildStatement(script, apiFilePtr, buildParams, generatedSet);
+        }
     }
 
     for (auto clientApi : componentPtr->clientApis)
